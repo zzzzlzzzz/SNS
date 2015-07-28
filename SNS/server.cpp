@@ -2,11 +2,16 @@
 
 using namespace std;
 
+/* 
+	TODO:
+		* Добавить возможность отправки ответов
+*/
+
 namespace SNS
 {
 	const int DNServer::BUFSIZE = 65000;
 
-	DNServer::DNServer()
+	DNServer::DNServer(const std::string& configName) : cfpars(configName)
 	{
 		if (WSAStartup(MAKEWORD(2, 2), &wsaData))
 			throw logic_error("DNServer: WSAStartup error");
@@ -17,9 +22,9 @@ namespace SNS
 		WSACleanup();
 	}
 
-	DNServer& DNServer::getInstance()
+	DNServer& DNServer::getInstance(const std::string& configName)
 	{
-		static DNServer server;
+		static DNServer server(configName);
 		return server;
 	}
 
@@ -31,8 +36,8 @@ namespace SNS
 
 		SOCKADDR_IN ssin = { 0 };
 		ssin.sin_family = AF_INET;
-		ssin.sin_addr.s_addr = inet_addr("127.0.0.1");
-		ssin.sin_port = htons(53);
+		ssin.sin_addr.s_addr = inet_addr(cfpars["main"]["bindaddr"].c_str());
+		ssin.sin_port = htons(stoi(cfpars["main"]["bindport"]));
 
 		try
 		{
@@ -45,9 +50,9 @@ namespace SNS
 				memset(packet, 0, sizeof(packet));
 				SOCKADDR_IN ssinf = { 0 };
 				int ssinsz = sizeof(ssinf);
-				if (int rsize = recvfrom(servSock, packet, sizeof(packet), 0, reinterpret_cast<SOCKADDR*>(&ssinf), &ssinsz))
+				if (recvfrom(servSock, packet, sizeof(packet), 0, reinterpret_cast<SOCKADDR*>(&ssinf), &ssinsz) > 0)
 				{
-
+					DnsRequest req(packet);
 				}
 			}
 		}
