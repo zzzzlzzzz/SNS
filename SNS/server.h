@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstring>
+#include <memory>
 
 // system headers
 #include <winsock2.h>
@@ -25,6 +26,7 @@ namespace SNS
 		virtual ~DNServer();
 		DNServer(const DNServer&) = delete;
 		DNServer& operator=(const DNServer&) = delete;
+		bool processClient(DnsResponse& resp);
 	public:
 		static DNServer& getInstance(const std::string& configName);
 		void mainLoop();
