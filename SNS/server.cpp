@@ -10,6 +10,8 @@ using namespace std;
 	http://www.zytrax.com/books/dns/ch15/
 	http://www.soslan.ru/tcp/tcp14.html
 	https://xakep.ru/2001/07/03/12975/
+	http://tools.ietf.org/html/rfc1035#page-12
+	https://technet.microsoft.com/en-us/library/dd197470%28v=ws.10%29.aspx
 
 	TODO:
 		* ƒобавить анализ записей типа A
@@ -65,47 +67,44 @@ namespace SNS
 			if (bind(servSock, reinterpret_cast<SOCKADDR*>(&ssin), sizeof(ssin)))
 					throw logic_error("DNServer: bind error");
 
-			char packet[BUFSIZE];
+			unsigned char packet[BUFSIZE];
 			while (1)
 			{
-				size_t recSize;
 				memset(packet, 0, sizeof(packet));
 				SOCKADDR_IN ssinf = { 0 };
+				size_t recSize;
 				int ssinsz = sizeof(ssinf);
-				if ((recSize = recvfrom(servSock, packet, sizeof(packet), 0, reinterpret_cast<SOCKADDR*>(&ssinf), &ssinsz)) > 0)
+				if ((recSize = recvfrom(servSock, reinterpret_cast<char*>(packet), sizeof(packet), 0, reinterpret_cast<SOCKADDR*>(&ssinf), &ssinsz)) > 0)
 				{
 					DnsResponse response(packet);
 					if (processClient(response))
 					{
 						// обработать запрос и отдать ответ
-						ssinsz = sizeof(ssinf);
 						size_t respsize = response.size();
 
 						response.setTruncated(respsize >= 512);
 
 						if (respsize > sizeof(packet))
 						{
-							unique_ptr<char[]> uptr(new char[respsize]);
+							unique_ptr<unsigned char[]> uptr(new unsigned char[respsize]);
 							response.dump(uptr.get());
-							sendto(servSock, uptr.get(), respsize, 0, reinterpret_cast<SOCKADDR*>(&ssinf), ssinsz);
+							sendto(servSock, reinterpret_cast<char*>(uptr.get()), respsize, 0, reinterpret_cast<SOCKADDR*>(&ssinf), sizeof(ssinf));
 						}
 						else
 						{
 							memset(packet, 0, sizeof(packet));
 							response.dump(packet);
-							sendto(servSock, packet, respsize, 0, reinterpret_cast<SOCKADDR*>(&ssinf), ssinsz);
+							sendto(servSock, reinterpret_cast<char*>(packet), respsize, 0, reinterpret_cast<SOCKADDR*>(&ssinf), sizeof(ssinf));
 						}
 					}
 					else
 					{
 						// данный тип запроса не поддерживаетс€
 						// отправить запрос основному серверу
-						int assinsz = sizeof(assin);
-						sendto(cliSock, packet, recSize, 0, reinterpret_cast<SOCKADDR*>(&assin), assinsz);
+						sendto(cliSock, reinterpret_cast<char*>(packet), recSize, 0, reinterpret_cast<SOCKADDR*>(&assin), sizeof(assin));
 						memset(packet, 0, sizeof(packet));
-						int rfms = recvfrom(cliSock, packet, sizeof(packet), 0, NULL, NULL);
-						ssinsz = sizeof(ssinf);
-						sendto(servSock, packet, rfms, 0, reinterpret_cast<SOCKADDR*>(&ssinf), ssinsz);
+						int rfms = recvfrom(cliSock, reinterpret_cast<char*>(packet), sizeof(packet), 0, NULL, NULL);
+						sendto(servSock, reinterpret_cast<char*>(packet), rfms, 0, reinterpret_cast<SOCKADDR*>(&ssinf), sizeof(ssinf));
 					}
 				}
 			}
@@ -123,6 +122,96 @@ namespace SNS
 
 	bool DNServer::processClient(DnsResponse& resp)
 	{
+		if (resp.getMessageType() == QUERY && resp.getOperationCode() == STANDART)
+		{
+			for (int i = 0; i < resp.getQueryCount(); i++)
+			{
+				/*if (resp.getType(i) == A && resp.getAddress(i) == "sysadmins.ru")
+				{
+					resp.setMessageType(ANSWER);
+					resp.setAuthorityAnswer(true);
+					resp.setAllowRecursion(false);
+					resp.setReturnCode(NOERR);
+
+					resp.setAnswerCount(1);
+
+					vector<unsigned char> rd = { 217, 69, 139, 200 };
+					resp.addRawAnswer(resp.getRaw(i), 0, rd);
+					return true;
+				}
+				else */if (resp.getType(i) == SOA && resp.getAddress(i) == "sysadmins.ru")
+				{
+					resp.setMessageType(ANSWER);
+					resp.setAuthorityAnswer(true);
+					resp.setAllowRecursion(false);
+					resp.setReturnCode(NOERR);
+
+					resp.setAnswerCount(1);
+
+					string mname = "mname.ru";
+					string rname = "rname.ru";
+					struct SOAS
+					{
+						unsigned long serial;
+						unsigned long refresh;
+						unsigned long retry;
+						unsigned long expire;
+						unsigned long minimum;
+					};
+					SOAS t;
+					t.serial = htonl(1111);
+					t.refresh = htonl(2222);
+					t.retry = htonl(3333);
+					t.expire = htonl(4444);
+					t.minimum = htonl(5555);
+
+					size_t cnt = 0;
+					string mnameo("");
+					for (auto it = mname.rbegin(); it != mname.rend(); it++)
+					{
+						if (*it == '.')
+						{
+							mnameo = string(1,cnt) + mnameo;
+							cnt = 0;
+						}
+						else
+						{
+							mnameo = *it + mnameo;
+							++cnt;
+						}
+					}
+					mnameo = string(1, cnt) + mnameo;
+
+					cnt = 0;
+					string rnameo("");
+					for (auto it = rname.rbegin(); it != rname.rend(); it++)
+					{
+						if (*it == '.')
+						{
+							rnameo = string(1, cnt) + rnameo;
+							cnt = 0;
+						}
+						else
+						{
+							rnameo = *it + rnameo;
+							++cnt;
+						}
+					}
+					rnameo = string(1, cnt) + rnameo;
+
+					vector<unsigned char> rd(mnameo.length() + 1 + rnameo.length() + 1 + sizeof(SOAS));
+					memcpy(&rd[0], mnameo.c_str(), mnameo.length() + 1);
+					memcpy(&rd[mnameo.length() + 1], rnameo.c_str(), rnameo.length() + 1);
+					memcpy(&rd[mnameo.length() + 1 + rnameo.length() + 1], &t, sizeof(SOAS));
+					resp.addRawAnswer(resp.getRaw(i), 0, rd);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
 		return false;
 	}
 }

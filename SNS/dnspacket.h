@@ -45,11 +45,11 @@ namespace SNS
 		} header;
 		#pragma pack(pop)
 	public:
-		DnsHeader(const char* rawPacket);
+		DnsHeader(const unsigned char* rawPacket);
 		virtual size_t size() const;
 		// вывод в заранее определенный буфер
 		// возвращает указатель на следующий байт за последним
-		virtual char* dump(char* out) const;
+		virtual unsigned char* dump(unsigned char* out) const;
 		virtual ~DnsHeader() = default;
 
 		// идентификатор запроса
@@ -114,9 +114,9 @@ namespace SNS
 	private:
 		std::vector<std::pair<std::string, ReqFlag>> items;
 	public:
-		DnsRequest(const char* rawPacket);
+		DnsRequest(const unsigned char* rawPacket);
 		virtual size_t size() const override;
-		virtual char* dump(char* out) const override;
+		virtual unsigned char* dump(unsigned char* out) const override;
 		virtual ~DnsRequest() = default;
 
 		size_t reqCount() const;
@@ -142,32 +142,32 @@ namespace SNS
 		std::vector<
 			std::pair<
 				std::pair<std::string, ReqFlag>,
-				std::pair<RespFlag, std::vector<char>>
+				std::pair<RespFlag, std::vector<unsigned char>>
 			>
 		> answer;
 		std::vector<
 			std::pair<
 				std::pair<std::string, ReqFlag>,
-				std::pair<RespFlag, std::vector<char>>
+				std::pair<RespFlag, std::vector<unsigned char>>
 			>
 		> legacy;
 		std::vector<
 			std::pair<
 				std::pair<std::string, ReqFlag>,
-				std::pair<RespFlag, std::vector<char>>
+				std::pair<RespFlag, std::vector<unsigned char>>
 			>
 		> addition;
-		size_t sectionSize(const std::vector<std::pair<std::pair<std::string, ReqFlag>, std::pair<RespFlag, std::vector<char>>>>& section) const;
-		char* appSection(const std::vector<std::pair<std::pair<std::string, ReqFlag>, std::pair<RespFlag, std::vector<char>>>>& section, char* out) const;
+		size_t sectionSize(const std::vector<std::pair<std::pair<std::string, ReqFlag>, std::pair<RespFlag, std::vector<unsigned char>>>>& section) const;
+		unsigned char* appSection(const std::vector<std::pair<std::pair<std::string, ReqFlag>, std::pair<RespFlag, std::vector<unsigned char>>>>& section, unsigned char* out) const;
 	public:
-		DnsResponse(const char* rawPacket);
+		DnsResponse(const unsigned char* rawPacket);
 		virtual size_t size() const override;
-		virtual char* dump(char* out) const override;
+		virtual unsigned char* dump(unsigned char* out) const override;
 		virtual ~DnsResponse() = default;
 
-		void addRawAnswer(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<char>& raw);
-		void addRawLegacy(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<char>& raw);
-		void addRawAddition(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<char>& raw);
+		void addRawAnswer(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<unsigned char>& raw);
+		void addRawLegacy(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<unsigned char>& raw);
+		void addRawAddition(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<unsigned char>& raw);
 	};
 
 	//////////////////////////////////////////////////////////////////////////

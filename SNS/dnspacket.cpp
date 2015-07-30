@@ -6,7 +6,7 @@ namespace SNS
 {
 	//////////////////////////////////////////////////////////////////////////
 
-	DnsHeader::DnsHeader(const char* rawPacket)
+	DnsHeader::DnsHeader(const unsigned char* rawPacket)
 	{
 		const DnsStruct* src = reinterpret_cast<const DnsStruct*>(rawPacket);
 		header.ident = ntohs(src->ident);
@@ -151,7 +151,7 @@ namespace SNS
 		return sizeof(DnsStruct);
 	}
 
-	char* DnsHeader::dump(char* out) const
+	unsigned char* DnsHeader::dump(unsigned char* out) const
 	{
 		DnsStruct* dst = reinterpret_cast<DnsStruct*>(out);
 		dst->ident = htons(header.ident);
@@ -165,12 +165,12 @@ namespace SNS
 
 	//////////////////////////////////////////////////////////////////////////
 
-	DnsRequest::DnsRequest(const char* rawPacket) :DnsHeader(rawPacket)
+	DnsRequest::DnsRequest(const unsigned char* rawPacket) :DnsHeader(rawPacket)
 	{
-		const char* ptr = rawPacket + DnsHeader::size();
+		const unsigned char* ptr = rawPacket + DnsHeader::size();
 		for (unsigned short i = 0; i < getQueryCount(); i++)
 		{
-			string domain(ptr);
+			string domain(reinterpret_cast<const char*>(ptr));
 			ptr += domain.length() + 1;
 			const ReqFlag* rf = reinterpret_cast<const ReqFlag*>(ptr);
 			ptr += sizeof(ReqFlag);
@@ -218,9 +218,9 @@ namespace SNS
 		return items[i];
 	}
 
-	char* DnsRequest::dump(char* out) const
+	unsigned char* DnsRequest::dump(unsigned char* out) const
 	{
-		char* pout = DnsHeader::dump(out);
+		unsigned char* pout = DnsHeader::dump(out);
 		for (const auto& x : items)
 		{
 			memcpy(pout, x.first.c_str(), x.first.length() + 1);
@@ -235,7 +235,7 @@ namespace SNS
 
 	//////////////////////////////////////////////////////////////////////////
 
-	DnsResponse::DnsResponse(const char* rawPacket) :DnsRequest(rawPacket)
+	DnsResponse::DnsResponse(const unsigned char* rawPacket) :DnsRequest(rawPacket)
 	{
 
 	}
@@ -252,7 +252,7 @@ namespace SNS
 		return sz;
 	}
 
-	size_t DnsResponse::sectionSize(const std::vector<std::pair<std::pair<std::string, ReqFlag>, std::pair<RespFlag, std::vector<char>>>>& section) const
+	size_t DnsResponse::sectionSize(const std::vector<std::pair<std::pair<std::string, ReqFlag>, std::pair<RespFlag, std::vector<unsigned char>>>>& section) const
 	{
 		size_t sz = 0;
 		for (const auto& x : section)
@@ -265,29 +265,30 @@ namespace SNS
 		return sz;
 	}
 
-	char* DnsResponse::appSection(const vector<pair<pair<string, ReqFlag>, std::pair<RespFlag, std::vector<char>>>>& section, char* out) const
+	unsigned char* DnsResponse::appSection(const vector<pair<pair<string, ReqFlag>, std::pair<RespFlag, std::vector<unsigned char>>>>& section, unsigned char* out) const
 	{
-		char* pout = out;
+		unsigned char* pout = out;
 		for (const auto& x : section)
 		{
 			memcpy(pout, x.first.first.c_str(), x.first.first.length() + 1);
 			pout += x.first.first.length() + 1;
 			ReqFlag* reqf = reinterpret_cast<ReqFlag*>(pout);
-			reqf->qclass = htons(x.first.second.qclass);
 			reqf->qtype = htons(x.first.second.qtype);
+			reqf->qclass = htons(x.first.second.qclass);
 			pout += sizeof(ReqFlag);
 			RespFlag* resf = reinterpret_cast<RespFlag*>(pout);
 			resf->TTL = htonl(x.second.first.TTL);
 			resf->len = htons(x.second.first.len);
+			pout += sizeof(RespFlag);
 			for (auto c : x.second.second)
 				*(pout++) = c;
 		}
 		return pout;
 	}
 
-	char* DnsResponse::dump(char* out) const
+	unsigned char* DnsResponse::dump(unsigned char* out) const
 	{
-		char* pout = DnsRequest::dump(out);
+		unsigned char* pout = DnsRequest::dump(out);
 		if (!answer.empty())
 			pout = appSection(answer, pout);
 		if (!legacy.empty())
@@ -297,19 +298,19 @@ namespace SNS
 		return pout;
 	}
 
-	void DnsResponse::addRawAnswer(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<char>& raw)
+	void DnsResponse::addRawAnswer(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
 	{
 		RespFlag resp{ TTL, raw.size() };
 		answer.push_back(make_pair(query, make_pair(resp, raw)));
 	}
 
-	void DnsResponse::addRawLegacy(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<char>& raw)
+	void DnsResponse::addRawLegacy(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
 	{
 		RespFlag resp{ TTL, raw.size() };
 		legacy.push_back(make_pair(query, make_pair(resp, raw)));
 	}
 
-	void DnsResponse::addRawAddition(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<char>& raw)
+	void DnsResponse::addRawAddition(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
 	{
 		RespFlag resp{ TTL, raw.size() };
 		addition.push_back(make_pair(query, make_pair(resp, raw)));
