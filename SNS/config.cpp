@@ -15,7 +15,7 @@ namespace SNS
 		{
 			string cline("");
 			getline(ifs, cline);
-			if (cline[0] == '#')
+			if (cline[0] == '#' || cline.empty())
 				continue;
 			else if (cline[0] == '[')
 				curcat = cline.substr(1, cline.length() - 2);
@@ -32,5 +32,15 @@ namespace SNS
 	map<string, string>& ConfigParser::operator[](const string& idx)
 	{
 		return config[idx];
+	}
+
+	map<string, map<string, string>>::iterator ConfigParser::begin()
+	{
+		return config.begin();
+	}
+
+	map<string, map<string, string>>::iterator ConfigParser::end()
+	{
+		return config.end();
 	}
 }

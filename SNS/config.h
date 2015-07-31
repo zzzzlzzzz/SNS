@@ -14,6 +14,8 @@ namespace SNS
 	public:
 		ConfigParser(const std::string& name);
 		std::map<std::string, std::string>& operator[](const std::string& idx);
+		std::map<std::string, std::map<std::string, std::string>>::iterator begin();
+		std::map<std::string, std::map<std::string, std::string>>::iterator end();
 	};
 }
 

@@ -14,16 +14,27 @@ using namespace std;
 	https://technet.microsoft.com/en-us/library/dd197470%28v=ws.10%29.aspx
 
 	TODO:
-		* Добавить анализ записей типа A
-		* добавить возможность редиректа в случае неподдерживаемого запроса
+		* Добавить хэширование в модуле A
+		* Добавить модули
 */
 
 namespace SNS
 {
 	const int DNServer::BUFSIZE = 65000;
 
-	DNServer::DNServer(const std::string& configName) : cfpars(configName)
+	DNServer::DNServer(const std::string& configName) : cfpars(configName), filter(cfpars)
 	{
+		try
+		{
+			// Здесь необходимо добавить модули для работы с различными типами записей
+			if (cfpars["main"]["aenabled"] == "1")
+				modules[A] = AModule(cfpars["files"]["afile"], stoi(cfpars["main"]["answerttl"]), stoi(cfpars["main"]["cachesize"]));
+		}
+		catch (exception& exp)
+		{
+			throw logic_error(string("DNServer: Module Load Error: ") + exp.what());
+		}
+
 		if (WSAStartup(MAKEWORD(2, 2), &wsaData))
 			throw logic_error("DNServer: WSAStartup error");
 	}
@@ -64,20 +75,20 @@ namespace SNS
 			assin.sin_addr.s_addr = inet_addr(cfpars["main"]["rootdns"].c_str());
 			assin.sin_port = htons(stoi(cfpars["main"]["rootdnsport"]));
 
-			if (bind(servSock, reinterpret_cast<SOCKADDR*>(&ssin), sizeof(ssin)))
+			if (::bind(servSock, reinterpret_cast<SOCKADDR*>(&ssin), sizeof(ssin)))
 					throw logic_error("DNServer: bind error");
 
 			unsigned char packet[BUFSIZE];
 			while (1)
 			{
 				memset(packet, 0, sizeof(packet));
-				SOCKADDR_IN ssinf = { 0 };
 				size_t recSize;
+				SOCKADDR_IN ssinf = { 0 };
 				int ssinsz = sizeof(ssinf);
 				if ((recSize = recvfrom(servSock, reinterpret_cast<char*>(packet), sizeof(packet), 0, reinterpret_cast<SOCKADDR*>(&ssinf), &ssinsz)) > 0)
 				{
 					DnsResponse response(packet);
-					if (processClient(response))
+					if (filter(inet_ntoa(ssinf.sin_addr)) && processClient(response))
 					{
 						// обработать запрос и отдать ответ
 						size_t respsize = response.size();
@@ -122,11 +133,33 @@ namespace SNS
 
 	bool DNServer::processClient(DnsResponse& resp)
 	{
+		bool status = false;
+		if (resp.getMessageType() == QUERY && resp.getOperationCode() == STANDART)
+		{
+			resp.setMessageType(ANSWER);
+			resp.setAuthorityAnswer(true);
+			resp.setAllowRecursion(false);
+			resp.setReturnCode(NOERR);
+
+			for (int i = 0; i < resp.getQueryCount(); i++)
+			{
+				auto mit = modules.find(resp.getType(i));
+				if (mit != modules.end())
+				{
+					status = true;
+					if(!(mit->second(resp, i)))
+						break;	// один из модулей установил ошибку - нет смысла продолжать обработку
+				}
+			}
+		}
+		return status;
+
+		/*
 		if (resp.getMessageType() == QUERY && resp.getOperationCode() == STANDART)
 		{
 			for (int i = 0; i < resp.getQueryCount(); i++)
 			{
-				/*if (resp.getType(i) == A && resp.getAddress(i) == "sysadmins.ru")
+				if (resp.getType(i) == A && resp.getAddress(i) == "sysadmins.ru")
 				{
 					resp.setMessageType(ANSWER);
 					resp.setAuthorityAnswer(true);
@@ -139,7 +172,7 @@ namespace SNS
 					resp.addRawAnswer(resp.getRaw(i), 0, rd);
 					return true;
 				}
-				else */if (resp.getType(i) == SOA && resp.getAddress(i) == "sysadmins.ru")
+				else if (resp.getType(i) == SOA && resp.getAddress(i) == "sysadmins.ru")
 				{
 					resp.setMessageType(ANSWER);
 					resp.setAuthorityAnswer(true);
@@ -210,8 +243,10 @@ namespace SNS
 				{
 					return false;
 				}
+				
 			}
 		}
 		return false;
+		*/
 	}
 }

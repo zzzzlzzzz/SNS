@@ -27,6 +27,12 @@
     <ClCompile Include="dnspacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ipfilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="amodule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server.h">
@@ -36,6 +42,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dnspacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ipfilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="amodule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

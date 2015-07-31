@@ -35,13 +35,13 @@ namespace SNS
 			// Флаги
 			unsigned short flags;
 			// Количество вопросов
-			unsigned short qcount;
+			unsigned short queryCount;
 			// Количество ответов
-			unsigned short acount;
+			unsigned short answerCount;
 			// Количество прав доступа
-			unsigned short lcount;
+			unsigned short authorityCount;
 			// Количество дополнительных записей
-			unsigned short ocount;
+			unsigned short additionCount;
 		} header;
 		#pragma pack(pop)
 	public:
@@ -62,8 +62,8 @@ namespace SNS
 		unsigned short getAnswerCount() const;
 		void setAnswerCount(unsigned short c);
 		// количество авторитетных
-		unsigned short getAccessCount() const;
-		void setAccessCount(unsigned short c);
+		unsigned short getAuthorityCount() const;
+		void setAuthorityCount(unsigned short c);
 		// количество дополнительного
 		unsigned short getAdditionCount() const;
 		void setAdditionCount(unsigned short c);
@@ -166,7 +166,7 @@ namespace SNS
 		virtual ~DnsResponse() = default;
 
 		void addRawAnswer(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<unsigned char>& raw);
-		void addRawLegacy(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<unsigned char>& raw);
+		void addRawAuthority(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<unsigned char>& raw);
 		void addRawAddition(const std::pair<std::string, ReqFlag>& query, unsigned long TTL, const std::vector<unsigned char>& raw);
 	};
 

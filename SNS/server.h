@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <cstring>
 #include <memory>
+#include <map>
+#include <functional>
 
 // system headers
 #include <winsock2.h>
@@ -13,7 +15,9 @@
 
 // project headers
 #include "config.h"
+#include "ipfilter.h"
 #include "dnspacket.h"
+#include "amodule.h"
 
 namespace SNS
 {
@@ -22,6 +26,8 @@ namespace SNS
 		static const int BUFSIZE;
 		WSADATA wsaData;
 		ConfigParser cfpars;
+		IpFilter filter;
+		std::map<RequestType, std::function<bool(DnsResponse&,size_t)>> modules;
 		DNServer(const std::string& configName);
 		virtual ~DNServer();
 		DNServer(const DNServer&) = delete;

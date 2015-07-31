@@ -11,10 +11,10 @@ namespace SNS
 		const DnsStruct* src = reinterpret_cast<const DnsStruct*>(rawPacket);
 		header.ident = ntohs(src->ident);
 		header.flags = ntohs(src->flags);
-		header.qcount = ntohs(src->qcount);
-		header.acount = ntohs(src->acount);
-		header.lcount = ntohs(src->lcount);
-		header.ocount = ntohs(src->ocount);
+		header.queryCount = ntohs(src->queryCount);
+		header.answerCount = ntohs(src->answerCount);
+		header.authorityCount = ntohs(src->authorityCount);
+		header.additionCount = ntohs(src->additionCount);
 	}
 
 	unsigned short DnsHeader::getHeaderId() const
@@ -24,42 +24,42 @@ namespace SNS
 
 	unsigned short DnsHeader::getQueryCount() const
 	{
-		return header.qcount;
+		return header.queryCount;
 	}
 
 	void DnsHeader::setQueryCount(unsigned short c)
 	{
-		header.qcount = c;
+		header.queryCount = c;
 	}
 
 	unsigned short DnsHeader::getAnswerCount() const
 	{
-		return header.acount;
+		return header.answerCount;
 	}
 
 	void DnsHeader::setAnswerCount(unsigned short c)
 	{
-		header.acount = c;
+		header.answerCount = c;
 	}
 
-	unsigned short DnsHeader::getAccessCount() const
+	unsigned short DnsHeader::getAuthorityCount() const
 	{
-		return header.lcount;
+		return header.authorityCount;
 	}
 
-	void DnsHeader::setAccessCount(unsigned short c)
+	void DnsHeader::setAuthorityCount(unsigned short c)
 	{
-		header.lcount = c;
+		header.authorityCount = c;
 	}
 
 	unsigned short DnsHeader::getAdditionCount() const
 	{
-		return header.ocount;
+		return header.additionCount;
 	}
 
 	void DnsHeader::setAdditionCount(unsigned short c)
 	{
-		header.ocount = c;
+		header.additionCount = c;
 	}
 
 	MessageType DnsHeader::getMessageType() const
@@ -156,10 +156,10 @@ namespace SNS
 		DnsStruct* dst = reinterpret_cast<DnsStruct*>(out);
 		dst->ident = htons(header.ident);
 		dst->flags = htons(header.flags);
-		dst->qcount = htons(header.qcount);
-		dst->acount = htons(header.acount);
-		dst->lcount = htons(header.lcount);
-		dst->ocount = htons(header.ocount);
+		dst->queryCount = htons(header.queryCount);
+		dst->answerCount = htons(header.answerCount);
+		dst->authorityCount = htons(header.authorityCount);
+		dst->additionCount = htons(header.additionCount);
 		return out + sizeof(DnsStruct);
 	}
 
@@ -304,7 +304,7 @@ namespace SNS
 		answer.push_back(make_pair(query, make_pair(resp, raw)));
 	}
 
-	void DnsResponse::addRawLegacy(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
+	void DnsResponse::addRawAuthority(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
 	{
 		RespFlag resp{ TTL, raw.size() };
 		legacy.push_back(make_pair(query, make_pair(resp, raw)));
