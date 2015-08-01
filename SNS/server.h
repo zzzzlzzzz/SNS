@@ -13,6 +13,10 @@
 #ifdef _WIN32
 	#include <winsock2.h>
 	#pragma comment(lib, "ws2_32.lib")
+#elif __linux
+    #include <arpa/inet.h>
+    #include <netdb.h>
+    #include <unistd.h>
 #endif
 
 // project headers
@@ -28,7 +32,9 @@ namespace SNS
 	class DNServer
 	{
 		static const int BUFSIZE;
-		WSADATA wsaData;
+        #ifdef _WIN32
+            WSADATA wsaData;
+        #endif
 		ConfigParser cfpars;
 		IpFilter filter;
 		std::map<RequestType, std::function<bool(DnsResponse&,size_t)>> modules;

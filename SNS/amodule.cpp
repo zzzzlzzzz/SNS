@@ -43,7 +43,11 @@ namespace SNS
 					return false;
 				}
 
-				IN_ADDR ia;
+                #ifdef _WIN32
+                    IN_ADDR ia;
+                #elif __linux
+                    in_addr ia;
+                #endif
 				ia.s_addr = *reinterpret_cast<unsigned long*>(he->h_addr_list[0]);
 				strToByte(string(inet_ntoa(ia)), ipbuf);
 				addToCache(domain, ipbuf);

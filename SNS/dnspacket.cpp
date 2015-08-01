@@ -300,19 +300,19 @@ namespace SNS
 
 	void DnsResponse::addRawAnswer(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
 	{
-		RespFlag resp{ TTL, raw.size() };
+        RespFlag resp{ TTL, static_cast<unsigned short>(raw.size()) };
 		answer.push_back(make_pair(query, make_pair(resp, raw)));
 	}
 
 	void DnsResponse::addRawAuthority(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
 	{
-		RespFlag resp{ TTL, raw.size() };
+        RespFlag resp{ TTL, static_cast<unsigned short>(raw.size()) };
 		legacy.push_back(make_pair(query, make_pair(resp, raw)));
 	}
 
 	void DnsResponse::addRawAddition(const pair<string, ReqFlag>& query, unsigned long TTL, const vector<unsigned char>& raw)
 	{
-		RespFlag resp{ TTL, raw.size() };
+        RespFlag resp{ TTL, static_cast<unsigned short>(raw.size()) };
 		addition.push_back(make_pair(query, make_pair(resp, raw)));
 	}
 }

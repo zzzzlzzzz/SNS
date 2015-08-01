@@ -44,6 +44,13 @@ namespace SNS
 
 	void DNServer::mainLoop()
 	{
+        #ifdef __linux
+            typedef int SOCKET;
+            typedef sockaddr SOCKADDR;
+            typedef sockaddr_in SOCKADDR_IN;
+            const int INVALID_SOCKET = -1;
+            #define closesocket(X) close(X)
+        #endif
 		SOCKET servSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (servSock == INVALID_SOCKET)
 			throw logic_error("DNServer: socket error");
@@ -76,7 +83,11 @@ namespace SNS
 				memset(packet, 0, sizeof(packet));
 				size_t recSize;
 				SOCKADDR_IN ssinf = { 0 };
-				int ssinsz = sizeof(ssinf);
+                #ifdef _WIN32
+                    int ssinsz = sizeof(ssinf);
+                #elif __linux
+                    socklen_t ssinsz = sizeof(ssinf);
+                #endif
 				if ((recSize = recvfrom(servSock, reinterpret_cast<char*>(packet), sizeof(packet), 0, reinterpret_cast<SOCKADDR*>(&ssinf), &ssinsz)) > 0)
 				{
 					DnsResponse response(packet);
