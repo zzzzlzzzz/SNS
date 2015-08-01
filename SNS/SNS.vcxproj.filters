@@ -33,6 +33,12 @@
     <ClCompile Include="amodule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="soamodule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cnamemodule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server.h">
@@ -48,6 +54,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="amodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="soamodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cnamemodule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,9 +11,22 @@
 
 namespace SNS
 {
+	/*
+		DNS PROTOCOL DOCUMENTATION
+			*	http://www.maxblogs.ru/articles/dns-domain-name-system
+			*	http://kunegin.narod.ru/ref3/dns/format.htm
+			*	http://citforum.ru/internet/dns/dns/
+			*	http://book.itep.ru/4/44/dns_4412.htm
+			*	http://cdo.bseu.by/library/ibs1/net_l/tcp_ip/dns/dns.htm
+			*	http://www.zytrax.com/books/dns/ch15/
+			*	http://www.soslan.ru/tcp/tcp14.html
+			*	https://xakep.ru/2001/07/03/12975/
+			*	http://tools.ietf.org/html/rfc1035#page-12
+			*	https://technet.microsoft.com/en-us/library/dd197470%28v=ws.10%29.aspx
+	*/
+
 	//////////////////////////////////////////////////////////////////////////
 
-	// http://www.maxblogs.ru/articles/dns-domain-name-system
 	enum MessageType{ QUERY = 0, ANSWER = 1 };
 	enum OperationCode{ STANDART = 0, INVERSION = 1, STATUS = 2, NOTIFY = 4, UPDATE = 5 };
 	enum ReturnCode{ NOERR = 0, FORMATERR = 1, SERVERR = 2, NAMEERR = 3, NAMENOTEXIST = 4, NOTIMPL = 5 };

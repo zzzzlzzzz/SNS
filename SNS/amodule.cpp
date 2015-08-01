@@ -16,7 +16,7 @@ namespace SNS
 				iplist[cpit->first] = ipbuf;
 			}
 		}
-		catch (exception& e)
+		catch (const exception& e)
 		{
 			throw logic_error(string("AModule: ") + e.what());
 		}
@@ -30,7 +30,6 @@ namespace SNS
 		{
 			resp.addRawAnswer(resp.getRaw(i), attl, it->second);
 			resp.setAnswerCount(resp.getAnswerCount() + 1);
-			return true;
 		}
 		else
 		{
@@ -51,9 +50,8 @@ namespace SNS
 			}
 			resp.addRawAddition(resp.getRaw(i), attl, ipbuf);
 			resp.setAnswerCount(resp.getAnswerCount() + 1);
-			return true;
 		}
-		return false;
+		return true;
 	}
 
 	void AModule::strToByte(const std::string& src, std::vector<unsigned char>& dst)

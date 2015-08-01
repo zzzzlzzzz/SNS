@@ -18,6 +18,8 @@
 #include "ipfilter.h"
 #include "dnspacket.h"
 #include "amodule.h"
+#include "soamodule.h"
+#include "cnamemodule.h"
 
 namespace SNS
 {

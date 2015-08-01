@@ -21,10 +21,12 @@ namespace SNS
 	class AModule
 	{
 		unsigned long attl;
+		// для кэширования
 		unsigned long cachesize;
 		std::deque<std::pair<std::string, std::vector<unsigned char>>> cache;
 		bool getFromCache(const std::string& domain, std::vector<unsigned char>& data);
 		void addToCache(const std::string& domain, const std::vector<unsigned char>& data);
+		// ~ для кэширования
 		std::map<std::string, std::vector<unsigned char>> iplist;
 		void strToByte(const std::string& src, std::vector<unsigned char>& dst);
 	public:

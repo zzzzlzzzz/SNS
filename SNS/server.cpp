@@ -2,22 +2,6 @@
 
 using namespace std;
 
-/* 
-	http://kunegin.narod.ru/ref3/dns/format.htm
-	http://citforum.ru/internet/dns/dns/
-	http://book.itep.ru/4/44/dns_4412.htm
-	http://cdo.bseu.by/library/ibs1/net_l/tcp_ip/dns/dns.htm
-	http://www.zytrax.com/books/dns/ch15/
-	http://www.soslan.ru/tcp/tcp14.html
-	https://xakep.ru/2001/07/03/12975/
-	http://tools.ietf.org/html/rfc1035#page-12
-	https://technet.microsoft.com/en-us/library/dd197470%28v=ws.10%29.aspx
-
-	TODO:
-		* Добавить хэширование в модуле A
-		* Добавить модули
-*/
-
 namespace SNS
 {
 	const int DNServer::BUFSIZE = 65000;
@@ -28,9 +12,13 @@ namespace SNS
 		{
 			// Здесь необходимо добавить модули для работы с различными типами записей
 			if (cfpars["main"]["aenabled"] == "1")
-				modules[A] = AModule(cfpars["files"]["afile"], stoi(cfpars["main"]["answerttl"]), stoi(cfpars["main"]["cachesize"]));
+				modules[A] = AModule(cfpars["files"]["afile"], stol(cfpars["main"]["answerttl"]), stoi(cfpars["main"]["cachesize"]));
+			if (cfpars["main"]["soaenabled"] == "1")
+				modules[SOA] = SOAModule(cfpars["files"]["soafile"], stol(cfpars["main"]["answerttl"]));
+			if (cfpars["main"]["cnameenabled"] == "1")
+				modules[CNAME] = CNAMEModule(cfpars["files"]["cnamefile"], stol(cfpars["main"]["answerttl"]));
 		}
-		catch (exception& exp)
+		catch (const exception& exp)
 		{
 			throw logic_error(string("DNServer: Module Load Error: ") + exp.what());
 		}
@@ -144,109 +132,10 @@ namespace SNS
 			for (int i = 0; i < resp.getQueryCount(); i++)
 			{
 				auto mit = modules.find(resp.getType(i));
-				if (mit != modules.end())
-				{
-					status = true;
-					if(!(mit->second(resp, i)))
-						break;	// один из модулей установил ошибку - нет смысла продолжать обработку
-				}
+				if (mit != modules.end() && mit->second(resp, i))
+					status = true;	// хотя бы один модуль может ответить
 			}
 		}
 		return status;
-
-		/*
-		if (resp.getMessageType() == QUERY && resp.getOperationCode() == STANDART)
-		{
-			for (int i = 0; i < resp.getQueryCount(); i++)
-			{
-				if (resp.getType(i) == A && resp.getAddress(i) == "sysadmins.ru")
-				{
-					resp.setMessageType(ANSWER);
-					resp.setAuthorityAnswer(true);
-					resp.setAllowRecursion(false);
-					resp.setReturnCode(NOERR);
-
-					resp.setAnswerCount(1);
-
-					vector<unsigned char> rd = { 217, 69, 139, 200 };
-					resp.addRawAnswer(resp.getRaw(i), 0, rd);
-					return true;
-				}
-				else if (resp.getType(i) == SOA && resp.getAddress(i) == "sysadmins.ru")
-				{
-					resp.setMessageType(ANSWER);
-					resp.setAuthorityAnswer(true);
-					resp.setAllowRecursion(false);
-					resp.setReturnCode(NOERR);
-
-					resp.setAnswerCount(1);
-
-					string mname = "mname.ru";
-					string rname = "rname.ru";
-					struct SOAS
-					{
-						unsigned long serial;
-						unsigned long refresh;
-						unsigned long retry;
-						unsigned long expire;
-						unsigned long minimum;
-					};
-					SOAS t;
-					t.serial = htonl(1111);
-					t.refresh = htonl(2222);
-					t.retry = htonl(3333);
-					t.expire = htonl(4444);
-					t.minimum = htonl(5555);
-
-					size_t cnt = 0;
-					string mnameo("");
-					for (auto it = mname.rbegin(); it != mname.rend(); it++)
-					{
-						if (*it == '.')
-						{
-							mnameo = string(1,cnt) + mnameo;
-							cnt = 0;
-						}
-						else
-						{
-							mnameo = *it + mnameo;
-							++cnt;
-						}
-					}
-					mnameo = string(1, cnt) + mnameo;
-
-					cnt = 0;
-					string rnameo("");
-					for (auto it = rname.rbegin(); it != rname.rend(); it++)
-					{
-						if (*it == '.')
-						{
-							rnameo = string(1, cnt) + rnameo;
-							cnt = 0;
-						}
-						else
-						{
-							rnameo = *it + rnameo;
-							++cnt;
-						}
-					}
-					rnameo = string(1, cnt) + rnameo;
-
-					vector<unsigned char> rd(mnameo.length() + 1 + rnameo.length() + 1 + sizeof(SOAS));
-					memcpy(&rd[0], mnameo.c_str(), mnameo.length() + 1);
-					memcpy(&rd[mnameo.length() + 1], rnameo.c_str(), rnameo.length() + 1);
-					memcpy(&rd[mnameo.length() + 1 + rnameo.length() + 1], &t, sizeof(SOAS));
-					resp.addRawAnswer(resp.getRaw(i), 0, rd);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-				
-			}
-		}
-		return false;
-		*/
 	}
 }

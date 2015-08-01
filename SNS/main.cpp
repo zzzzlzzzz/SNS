@@ -3,6 +3,7 @@
 
 /*
 *	SNS - Simple Name Server
+*	SNS позволяет выполнять подмену ответов DNS сервера на запросы A, CNAME, SOA
 */
 
 int main(int argc, char* argv[])
