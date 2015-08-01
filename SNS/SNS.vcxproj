@@ -78,7 +78,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cnamemodule.cpp" />
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="dnspacket.cpp" />
+    <ClCompile Include="ipfilter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="server.cpp" />
+    <ClCompile Include="amodule.cpp" />
+    <ClCompile Include="soamodule.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="amodule.h" />
+    <ClInclude Include="cnamemodule.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="dnspacket.h" />
+    <ClInclude Include="ipfilter.h" />
+    <ClInclude Include="server.h" />
+    <ClInclude Include="soamodule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
