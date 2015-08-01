@@ -9,8 +9,10 @@
 #include <stdexcept>
 
 // system headers
-#include <WinSock2.h>
-#pragma comment(lib,"ws2_32.lib")
+#ifdef _WIN32
+	#include <WinSock2.h>
+	#pragma comment(lib,"ws2_32.lib")
+#endif
 
 // project headers
 #include "dnspacket.h"

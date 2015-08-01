@@ -23,13 +23,17 @@ namespace SNS
 			throw logic_error(string("DNServer: Module Load Error: ") + exp.what());
 		}
 
-		if (WSAStartup(MAKEWORD(2, 2), &wsaData))
-			throw logic_error("DNServer: WSAStartup error");
+		#ifdef _WIN32
+			if (WSAStartup(MAKEWORD(2, 2), &wsaData))
+				throw logic_error("DNServer: WSAStartup error");
+		#endif
 	}
 
 	DNServer::~DNServer()
 	{
-		WSACleanup();
+		#ifdef _WIN32
+			WSACleanup();
+		#endif
 	}
 
 	DNServer& DNServer::getInstance(const std::string& configName)

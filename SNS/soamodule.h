@@ -9,7 +9,9 @@
 #include <cstring>
 
 // system headers
-#include <WinSock2.h>
+#ifdef _WIN32
+	#include <WinSock2.h>
+#endif
 
 // project headers
 #include "config.h"

@@ -7,7 +7,9 @@
 #include <string>
 
 // system headers
-#include <WinSock2.h>
+#ifdef _WIN32
+	#include <WinSock2.h>
+#endif
 
 namespace SNS
 {
