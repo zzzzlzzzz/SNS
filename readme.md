@@ -2,11 +2,31 @@
 
 ## What this?
 
-SNS - it is easy to use dynamic name server
+SNS - it is easy to use dynamic name server. The main target of this software - replacing data in DNS packet.
+
+Simple work method:
+
+Before usage:
+DNS client <----> DNS server
+
+After ussage:
+DNS client <----> SNS <----> DNS server
+
+## Main features:
+
+* Support all types of DNS request
+
+* Analytics DNS types: A, CNAME, SOA
+
+* Flexible configuration of data replacing in DNS packet
+
+* Support selective replacing DNS packet by IP address
 
 ## TODO
 
-Translate description to English.
+* Add other packet type
+
+* Support DNS compression
 
 # SNS - Простой Сервер Имен
 
@@ -20,7 +40,7 @@ SNS - это простой в использовании прокси-серв�
 DNS клиент <----> DNS сервер
 
 После использования:
-DNS клиент <----> NSN <----> DNS сервер
+DNS клиент <----> SNS <----> DNS сервер
 
 ## Основные возможности
 
@@ -39,8 +59,6 @@ DNS клиент <----> NSN <----> DNS сервер
 * Добавление поддержки других типов DNS запросов
 
 * Поддержка компрессии
-
-* Перевод readme.md
 
 ## Сборка
 
