@@ -85,6 +85,7 @@
     <ClCompile Include="dnspacket.cpp" />
     <ClCompile Include="ipfilter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mxmodule.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="amodule.cpp" />
     <ClCompile Include="soamodule.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="dnspacket.h" />
     <ClInclude Include="ipfilter.h" />
+    <ClInclude Include="mxmodule.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="soamodule.h" />
   </ItemGroup>

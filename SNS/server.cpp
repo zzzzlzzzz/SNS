@@ -17,6 +17,8 @@ namespace SNS
 				modules[SOA] = SOAModule(cfpars["files"]["soafile"], stol(cfpars["main"]["answerttl"]));
 			if (cfpars["main"]["cnameenabled"] == "1")
 				modules[CNAME] = CNAMEModule(cfpars["files"]["cnamefile"], stol(cfpars["main"]["answerttl"]));
+			if (cfpars["main"]["mxenabled"] == "1")
+				modules[MX] = MXModule(cfpars["files"]["mxfile"], stol(cfpars["main"]["answerttl"]));
 		}
 		catch (const exception& exp)
 		{
