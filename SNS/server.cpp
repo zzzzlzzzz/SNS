@@ -17,19 +17,25 @@ namespace SNS
 				modules[SOA] = SOAModule(cfpars["files"]["soafile"], stol(cfpars["main"]["answerttl"]));
 			if (cfpars["main"]["cnameenabled"] == "1")
 				modules[CNAME] = CNAMEModule(cfpars["files"]["cnamefile"], stol(cfpars["main"]["answerttl"]));
+			if (cfpars["main"]["mxenabled"] == "1")
+				modules[MX] = MXModule(cfpars["files"]["mxfile"], stol(cfpars["main"]["answerttl"]));
 		}
 		catch (const exception& exp)
 		{
 			throw logic_error(string("DNServer: Module Load Error: ") + exp.what());
 		}
 
-		if (WSAStartup(MAKEWORD(2, 2), &wsaData))
-			throw logic_error("DNServer: WSAStartup error");
+		#ifdef _WIN32
+			if (WSAStartup(MAKEWORD(2, 2), &wsaData))
+				throw logic_error("DNServer: WSAStartup error");
+		#endif
 	}
 
 	DNServer::~DNServer()
 	{
-		WSACleanup();
+		#ifdef _WIN32
+			WSACleanup();
+		#endif
 	}
 
 	DNServer& DNServer::getInstance(const std::string& configName)
@@ -40,6 +46,13 @@ namespace SNS
 
 	void DNServer::mainLoop()
 	{
+        #ifdef __linux
+            typedef int SOCKET;
+            typedef sockaddr SOCKADDR;
+            typedef sockaddr_in SOCKADDR_IN;
+            const int INVALID_SOCKET = -1;
+            #define closesocket(X) close(X)
+        #endif
 		SOCKET servSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (servSock == INVALID_SOCKET)
 			throw logic_error("DNServer: socket error");
@@ -72,7 +85,11 @@ namespace SNS
 				memset(packet, 0, sizeof(packet));
 				size_t recSize;
 				SOCKADDR_IN ssinf = { 0 };
-				int ssinsz = sizeof(ssinf);
+                #ifdef _WIN32
+                    int ssinsz = sizeof(ssinf);
+                #elif __linux
+                    socklen_t ssinsz = sizeof(ssinf);
+                #endif
 				if ((recSize = recvfrom(servSock, reinterpret_cast<char*>(packet), sizeof(packet), 0, reinterpret_cast<SOCKADDR*>(&ssinf), &ssinsz)) > 0)
 				{
 					DnsResponse response(packet);

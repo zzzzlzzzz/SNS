@@ -7,7 +7,12 @@
 #include <string>
 
 // system headers
-#include <WinSock2.h>
+#ifdef _WIN32
+	#include <WinSock2.h>
+#elif __linux
+    #include <arpa/inet.h>
+    #include <netdb.h>
+#endif
 
 namespace SNS
 {

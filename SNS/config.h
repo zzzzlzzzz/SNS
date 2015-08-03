@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// standart header
 #include <fstream>
 #include <stdexcept>
 #include <string>

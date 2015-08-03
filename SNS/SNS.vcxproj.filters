@@ -39,6 +39,9 @@
     <ClCompile Include="cnamemodule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mxmodule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cnamemodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mxmodule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
