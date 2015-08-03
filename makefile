@@ -16,7 +16,7 @@ soamodule.o: SNS/soamodule.cpp
 	$(CC) $(CFLAGS) -o Build/soamodule.o SNS/soamodule.cpp
 	
 mxmodule.o: SNS/mxmodule.cpp
-	$(CC) $(CFLAGS) -o Builde/mxmodule.o mxmodule.cpp
+	$(CC) $(CFLAGS) -o Build/mxmodule.o SNS/mxmodule.cpp
 
 config.o: SNS/config.cpp
 	$(CC) $(CFLAGS) -o Build/config.o SNS/config.cpp

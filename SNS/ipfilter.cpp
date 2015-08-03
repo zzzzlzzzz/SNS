@@ -4,9 +4,9 @@ using namespace std;
 
 namespace SNS
 {
-	IpFilter::IpFilter(ConfigParser& cp)
+        IpFilter::IpFilter(ConfigParser& cp):enable(cp["main"]["ipfiltenabl"] == "1")
 	{
-		if (enable = (cp["main"]["ipfiltenabl"] == "1"))
+                if (enable)
 		{
 			ifstream ifs(cp["files"]["ipfile"].c_str(), ifstream::in);
 			if (!ifs.is_open())
