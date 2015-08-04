@@ -1,6 +1,11 @@
 #include <iostream>
 #include "server.h"
 
+/*
+*	SNS - Simple Name Server
+*	SNS позволяет выполнять подмену ответов DNS сервера на запросы A, CNAME, SOA, MX
+*/
+
 #ifdef __linux
     #include <fstream>
     #include <cstring>
@@ -9,39 +14,34 @@
     #include <cstdio>
     #include <sys/types.h>
     #include <sys/stat.h>
+
+	pid_t getDaemonPid()
+	{
+	    using namespace std;
+
+	    unsigned long pid = 0;
+
+	    ifstream ifs("pid.log", ifstream::in);
+	    if(ifs.is_open())
+	    {
+			ifs >> pid;
+			ifs.close();
+		}
+		return static_cast<pid_t>(pid);
+	}
+
+	void putDaemonPid(pid_t pid)
+	{
+	    using namespace std;
+	
+	    ofstream ofs("pid.log", ofstream::out);
+	    if(ofs.is_open())
+	    {
+			ofs << static_cast<unsigned long>(pid);
+			ofs.close();
+		}
+	}
 #endif
-
-/*
-*	SNS - Simple Name Server
-*	SNS позволяет выполнять подмену ответов DNS сервера на запросы A, CNAME, SOA, MX
-*/
-
-pid_t getDaemonPid()
-{
-    using namespace std;
-
-    unsigned long pid = 0;
-
-    ifstream ifs("pid.log", ifstream::in);
-    if(ifs.is_open())
-    {
-        ifs >> pid;
-        ifs.close();
-    }
-    return static_cast<pid_t>(pid);
-}
-
-void putDaemonPid(pid_t pid)
-{
-    using namespace std;
-
-    ofstream ofs("pid.log", ofstream::out);
-    if(ofs.is_open())
-    {
-        ofs << static_cast<unsigned long>(pid);
-        ofs.close();
-    }
-}
 
 int main(int argc, char* argv[])
 {

@@ -10,15 +10,18 @@ namespace SNS
 	{
 		try
 		{
+			unsigned long ttl = stol(cfpars["main"]["answerttl"]);
 			// Здесь необходимо добавить модули для работы с различными типами записей
 			if (cfpars["main"]["aenabled"] == "1")
-				modules[A] = AModule(cfpars["files"]["afile"], stol(cfpars["main"]["answerttl"]), stoi(cfpars["main"]["cachesize"]));
+				modules[A] = AModule(cfpars["files"]["afile"], ttl, stoi(cfpars["main"]["cachesize"]));
 			if (cfpars["main"]["soaenabled"] == "1")
-				modules[SOA] = SOAModule(cfpars["files"]["soafile"], stol(cfpars["main"]["answerttl"]));
+				modules[SOA] = SOAModule(cfpars["files"]["soafile"], ttl);
 			if (cfpars["main"]["cnameenabled"] == "1")
-				modules[CNAME] = CNAMEModule(cfpars["files"]["cnamefile"], stol(cfpars["main"]["answerttl"]));
+				modules[CNAME] = CNAMEModule(cfpars["files"]["cnamefile"], ttl);
 			if (cfpars["main"]["mxenabled"] == "1")
-				modules[MX] = MXModule(cfpars["files"]["mxfile"], stol(cfpars["main"]["answerttl"]));
+				modules[MX] = MXModule(cfpars["files"]["mxfile"], ttl);
+			if (cfpars["main"]["nsenabled"] == "1")
+				modules[NS] = NSModule(cfpars["files"]["nsfile"], ttl);
 		}
 		catch (const exception& exp)
 		{

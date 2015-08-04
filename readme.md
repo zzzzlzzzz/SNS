@@ -16,7 +16,7 @@ DNS client <----> SNS <----> DNS server
 
 * Support all types of DNS request
 
-* Analytics DNS types: A, CNAME, SOA
+* Analytics DNS types: A, CNAME, SOA, MX, NS
 
 * Flexible configuration of data replacing in DNS packet
 
@@ -46,7 +46,7 @@ DNS клиент <----> SNS <----> DNS сервер
 
 * Поддержка всех типов DNS запросов
 
-* Анализ типов A, CNAME, SOA
+* Анализ типов A, CNAME, SOA, MX, NS
 
 * Гибкая настройка замены информации в пакетах
 

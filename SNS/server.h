@@ -27,6 +27,7 @@
 #include "soamodule.h"
 #include "cnamemodule.h"
 #include "mxmodule.h"
+#include "nsmodule.h"
 
 namespace SNS
 {

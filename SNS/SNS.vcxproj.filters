@@ -42,6 +42,9 @@
     <ClCompile Include="mxmodule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="nsmodule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mxmodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nsmodule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
