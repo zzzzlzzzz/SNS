@@ -3,8 +3,8 @@ CFLAGS=-c -Wall -std=c++11
 
 all: SNS
 
-SNS: amodule.o cnamemodule.o soamodule.o mxmodule.o config.o ipfilter.o dnspacket.o server.o main.o 
-	g++ Build/amodule.o Build/cnamemodule.o Build/soamodule.o Build/mxmodule.o Build/config.o Build/ipfilter.o Build/dnspacket.o Build/server.o Build/main.o -o Build/SNS 
+SNS: amodule.o cnamemodule.o soamodule.o mxmodule.o nsmodule.o config.o ipfilter.o dnspacket.o server.o main.o 
+	g++ Build/amodule.o Build/cnamemodule.o Build/soamodule.o Build/mxmodule.o Build/nsmodule.o Build/config.o Build/ipfilter.o Build/dnspacket.o Build/server.o Build/main.o -o Build/SNS 
 
 amodule.o: SNS/amodule.cpp
 	$(CC) $(CFLAGS) -o Build/amodule.o SNS/amodule.cpp
@@ -17,6 +17,9 @@ soamodule.o: SNS/soamodule.cpp
 	
 mxmodule.o: SNS/mxmodule.cpp
 	$(CC) $(CFLAGS) -o Build/mxmodule.o SNS/mxmodule.cpp
+	
+nsmodule.o: SNS/nsmodule.cpp
+	$(CC) $(CFLAGS) -o Build/nsmodule.o SNS/nsmodule.cpp
 
 config.o: SNS/config.cpp
 	$(CC) $(CFLAGS) -o Build/config.o SNS/config.cpp
